@@ -31,50 +31,43 @@ public class AnalyzeByMap {
 
     public static List<Label> averageScoreBySubject(List<Pupil> pupils) {
         List<Label> rsl = new ArrayList<>();
-        int subjectIndex = 0;
-        while (subjectIndex < pupils.get(0).subjects().size()) {
-            double score = 0;
-            for (Pupil pupil : pupils) {
-                score += pupil.subjects().get(subjectIndex).score();
+        Map<String, Integer> temp = new LinkedHashMap<>();
+        for (Pupil pupil : pupils) {
+            for (Subject subject : pupil.subjects()) {
+                temp.put(subject.name(), temp.getOrDefault(subject.name(), 0) + subject.score());
             }
-            score /= pupils.size();
-            rsl.add(new Label(pupils.get(0).subjects().get(subjectIndex).name(), score));
-            subjectIndex++;
+        }
+        for (String key : temp.keySet()) {
+            rsl.add(new Label(key, temp.get(key) / temp.size()));
         }
         return rsl;
     }
 
     public static Label bestStudent(List<Pupil> pupils) {
-        String bestName = "";
-        double bestScore = 0;
+        List<Label> rsl = new ArrayList<>();
         for (Pupil pupil : pupils) {
             double stAvg = 0;
             for (Subject subject : pupil.subjects()) {
                 stAvg += subject.score();
             }
-            if (stAvg > bestScore) {
-                bestScore = stAvg;
-                bestName = pupil.name();
-            }
+            rsl.add(new Label(pupil.name(), stAvg));
         }
-        return new Label(bestName, bestScore);
+        Collections.sort(rsl, Comparator.naturalOrder());
+        return rsl.get(rsl.size() - 1);
     }
 
     public static Label bestSubject(List<Pupil> pupils) {
-        String bestName = "";
-        double bestScore = 0;
-        int subjectIndex = 0;
-        while (subjectIndex < pupils.get(0).subjects().size()) {
-            double score = 0;
-            for (Pupil pupil : pupils) {
-                score += pupil.subjects().get(subjectIndex).score();
+        List<Label> list = new ArrayList<>();
+        Map<String, Integer> temp = new LinkedHashMap<>();
+        for (Pupil pupil : pupils) {
+            for (Subject subject : pupil.subjects()) {
+                temp.put(subject.name(), temp.getOrDefault(subject.name(), 0) + subject.score());
             }
-            if (score > bestScore) {
-                bestScore = score;
-                bestName = pupils.get(0).subjects().get(subjectIndex).name();
-            }
-            subjectIndex++;
         }
-        return new Label(bestName, bestScore);
+        for (String key : temp.keySet()) {
+            list.add(new Label(key, temp.get(key)));
+        }
+        Collections.sort(list, Comparator.naturalOrder());
+        return list.get(list.size() - 1);
     }
 }
